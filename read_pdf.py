@@ -4,6 +4,8 @@ import fitz  # this is pymupdf
 # import PyPDF2  # deprecated
 import gtts
 from gtts import gTTS
+
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'   # to hide pygame hello msg
 from pygame import mixer
 
 
