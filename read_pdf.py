@@ -66,5 +66,5 @@ if __name__ == "__main__":
         print('Press Ctrl+C to stop the playback')
 
         mixer.music.play()
-        while mixer.get_busy():
+        while mixer.music.get_busy() == 1:
             time.sleep(1)  # check each second if the player finished to end program
