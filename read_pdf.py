@@ -48,13 +48,15 @@ if __name__ == "__main__":
             if args.show:
                 print(text)
             all_text += text
-        print("Conversion finished")
 
         if args.save:
             output = os.path.basename(args.pdf_file)
             output = output.replace('.pdf', '.mp3')
+            print("\tCreating MP3 file")
             myobj = gTTS(text=all_text, lang=args.language, slow=False)
+            print("\tSaving MP3 file")
             myobj.save(output)
+        print("Conversion finished")
 
     if args.play:
         mixer.init()
