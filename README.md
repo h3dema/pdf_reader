@@ -12,7 +12,7 @@ pip install -r requirements.py
 
 ## Program
 
-``
+```
 usage: read_pdf.py [-h] [--show] [--metadata] [--play] [--mp3] [--no-mp3]
                    [--language LANGUAGE]
                    pdf_file
@@ -27,8 +27,7 @@ optional arguments:
   --show               show each page as read
   --metadata           show document metadata
   --play
-  --mp3                save MP3
-  --no-mp3             save MP3
+  --mp3                save MP3 (default)
+  --no-mp3             dont save MP3
   --language LANGUAGE  language of the PDF used by the PDF reader
-``
-
+```

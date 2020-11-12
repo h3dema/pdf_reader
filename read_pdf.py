@@ -1,12 +1,21 @@
+import time
 import os
 import argparse
 import fitz  # this is pymupdf
 # import PyPDF2  # deprecated
 import gtts
 from gtts import gTTS
+import signal
+import sys
 
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'   # to hide pygame hello msg
 from pygame import mixer
+
+
+def signal_handler(sig, frame):
+    print('You pressed Ctrl+C!')
+    mixer.music.stop()
+    sys.exit(0)
 
 
 if __name__ == "__main__":
@@ -16,14 +25,15 @@ if __name__ == "__main__":
     parser.add_argument('--metadata', action="store_true", default=False, help="show document metadata")
     parser.add_argument('--play', action="store_true", default=False)
 
-    parser.add_argument('--mp3', dest="save", action="store_true", help="save MP3")
-    parser.add_argument('--no-mp3', dest="save", action="store_false", help="save MP3")
+    parser.add_argument('--mp3', dest="save", action="store_true", help="save MP3 (default)")
+    parser.add_argument('--no-mp3', dest="save", action="store_false", help="dont save MP3")
     parser.set_defaults(save=True)
 
     parser.add_argument('--language', type=str, default="en", help="language of the PDF used by the PDF reader")
 
     args = parser.parse_args()
-    assert args.language in gtts.lang.tts_langs().keys()
+    langs = gtts.lang.tts_langs()
+    assert args.language in langs.keys()
 
     # creating an object
     with fitz.open(args.pdf_file) as doc:
@@ -32,11 +42,13 @@ if __name__ == "__main__":
                 if v is not None:
                     print(f"{k}: {v}")
         all_text = ""
+        print("Start converting...")
         for page in doc:
             text = page.getText()
             if args.show:
                 print(text)
             all_text += text
+        print("Conversion finished")
 
         if args.save:
             output = os.path.basename(args.pdf_file)
@@ -47,4 +59,10 @@ if __name__ == "__main__":
     if args.play:
         mixer.init()
         mixer.music.load(output)
+
+        signal.signal(signal.SIGINT, signal_handler)
+        print('Press Ctrl+C to stop the playback')
+
         mixer.music.play()
+        while mixer.get_busy():
+            time.sleep(1)  # check each second if the player finished to end program
