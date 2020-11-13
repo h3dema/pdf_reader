@@ -1,3 +1,4 @@
+import re
 import time
 import os
 import argparse
@@ -18,6 +19,12 @@ def signal_handler(sig, frame):
     sys.exit(0)
 
 
+def clean_line(s):
+    # remove references, like [11]
+    s1 = re.sub(r'[\[\d+\]]', '', s)
+    return s1
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='PDF reader')
     parser.add_argument('pdf_file', type=str, help="PDF filename")
@@ -32,7 +39,11 @@ if __name__ == "__main__":
     parser.add_argument('--language', type=str, default="en", help="language of the PDF used by the PDF reader")
 
     args = parser.parse_args()
-    langs = gtts.lang.tts_langs()
+    try:
+        langs = gtts.lang.tts_langs()
+    except (TypeError, RuntimeError):
+        # sometimes need a second call to get the result (bug !!!)
+        langs = gtts.lang.tts_langs()
     assert args.language in langs.keys()
 
     # creating an object
@@ -47,7 +58,7 @@ if __name__ == "__main__":
             text = page.getText()
             if args.show:
                 print(text)
-            all_text += text
+            all_text += clean_line(text)
 
         if args.save:
             output = os.path.basename(args.pdf_file)
